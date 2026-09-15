@@ -1,0 +1,66 @@
+name: yubaba
+services:
+  db:
+    container_name: db
+    image: postgres:16.4
+    environment:
+      POSTGRES_DB: yubaba
+      POSTGRES_USER: yubaba
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-yubaba-local}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U yubaba -d yubaba" ]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks:
+      - yubaba-network
+  app:
+    container_name: app
+    build: .
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "--silent", "http://localhost:8080/" ]
+      interval: 3s
+      timeout: 3s
+      start_period: 10s
+      retries: 20
+    networks:
+      - yubaba-network
+    environment:
+      DB_PASSWORD: yubaba-local
+      JWT_SECRET: ${JWT_SECRET:-local-demo-only-secret-change-before-deployment-123456}
+      BOOTSTRAP_PASSWORD: ${BOOTSTRAP_PASSWORD:-Yubaba-demo-2026}
+      DEMO_DATA: ${DEMO_DATA:-true}
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+  liquibase:
+    image: liquibase/liquibase:4.29.2
+    profiles: [ "migration" ]
+    environment:
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://db:5432/yubaba
+      LIQUIBASE_COMMAND_USERNAME: yubaba
+      LIQUIBASE_COMMAND_PASSWORD: yubaba-local
+    networks:
+      - yubaba-network
+    volumes:
+      - ./src/main/resources:/liquibase/changelog:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    command:
+      - --search-path=/liquibase/changelog
+      - --changelog-file=db/changelog/db.changelog-master.yaml
+      - status
+
+volumes:
+  postgres-data:
+
+networks:
+  yubaba-network:
+    driver: bridge

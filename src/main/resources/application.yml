@@ -1,0 +1,28 @@
+server:
+  port: 8080
+spring:
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  datasource:
+    url: jdbc:postgresql://db:5432/yubaba
+    username: yubaba
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 12
+      connection-timeout: 5000
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate.default_batch_fetch_size: 50
+    hibernate:
+      ddl-auto: validate
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  mvc:
+    problemdetails:
+      enabled: true
+app:
+  jwt-secret: ${JWT_SECRET}
+  bootstrap-password: ${BOOTSTRAP_PASSWORD}
+  demo: ${DEMO_DATA:false}

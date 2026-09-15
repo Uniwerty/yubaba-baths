@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/changes/001-initial-schema.yaml
+  - changeSet:
+      id: 001-initial-schema
+      author: divchenkov
+      dbms: postgresql
+      runInTransaction: true
+      preConditions:
+        - not:
+            tableExists:
+              tableName: accounts
+      changes:
+        - sqlFile:
+            path: 001-initial-schema.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
