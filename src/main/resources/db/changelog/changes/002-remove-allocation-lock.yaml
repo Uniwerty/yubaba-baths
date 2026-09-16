@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-remove-allocation-lock
+      author: yubaba
+      dbms: postgresql
+      changes:
+        - sqlFile:
+            path: 002-remove-allocation-lock.sql
+            relativeToChangelogFile: true

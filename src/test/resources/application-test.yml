@@ -1,9 +1,0 @@
-spring:
-  datasource:
-    url: ${TEST_DB_URL:jdbc:postgresql://localhost:5432/yubaba_test}
-    username: ${TEST_DB_USER:yubaba}
-    password: ${TEST_DB_PASSWORD:yubaba-local}
-app:
-  jwt-secret: test-only-signing-key-at-least-thirty-two-characters
-  bootstrap-password: Test-password-2026
-  demo: true

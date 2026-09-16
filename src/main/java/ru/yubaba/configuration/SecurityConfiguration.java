@@ -23,7 +23,7 @@ import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
-public class SecurityConfig {
+public class SecurityConfiguration {
     @Bean
     PasswordEncoder passwords() {
         return new BCryptPasswordEncoder();

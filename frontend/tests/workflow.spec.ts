@@ -136,9 +136,15 @@ test("UC-1 → UC-2 → UC-3 через интерфейсы пяти ролей
     const bath = pages.chihiro;
     const card = bath.locator("article").filter({hasText: service});
     await expect(card).toBeVisible();
-    await expect(
-        card.getByRole("button", {name: "Ожидаем готовность воды"}),
-    ).toBeDisabled();
+    const startButton = card.getByRole("button", {name: "Начать услугу"});
+    await expect(startButton).toBeEnabled();
+    const rejectedStart = bath.waitForResponse(r =>
+        r.url().endsWith("/start") && r.request().method() === "POST");
+    await startButton.click();
+    expect((await rejectedStart).status()).toBe(409);
+    await expect(bath.getByRole("alert")).toHaveText("Вода ещё не готова. Дождитесь котельной.");
+    await expect(startButton).toBeEnabled();
+    await expect(card.getByRole("button", {name: "Завершить услугу"})).not.toBeVisible();
     const boiler = pages.kamaji;
     const task = boiler.locator("article").filter({hasText: service});
     await expect(task).toContainText("Полынь");

@@ -34,8 +34,6 @@ services:
       DB_USER: yubaba
       DB_PASSWORD: ${DB_PASSWORD:-yubaba-local}
       JWT_SECRET: ${JWT_SECRET:-local-demo-only-secret-change-before-deployment-123456}
-      BOOTSTRAP_PASSWORD: ${BOOTSTRAP_PASSWORD:-Yubaba-demo-2026}
-      DEMO_DATA: ${DEMO_DATA:-true}
     ports:
       - "8080:8080"
     depends_on:

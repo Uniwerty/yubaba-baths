@@ -189,7 +189,7 @@ export function Schedule({
                             {o.status === "IN_SERVICE" && !o.serviceStartedAt && (
                                 <button
                                     className="wide big"
-                                    disabled={busy || !o.waterReadyAt}
+                                    disabled={busy}
                                     onClick={() =>
                                         perform(
                                             () =>
@@ -201,7 +201,7 @@ export function Schedule({
                                     }
                                 >
 
-                                    {o.waterReadyAt ? "Начать услугу" : "Ожидаем готовность воды"}
+                                    Начать услугу
                                 </button>
                             )}
                             {o.status === "IN_SERVICE" && o.serviceStartedAt && (
@@ -223,8 +223,7 @@ export function Schedule({
                             )}
                             {o.status === "AWAITING_PAYMENT" && (
                                 <p className="notice">
-                                    Услуга завершена. После оплаты ресурсы освободятся и начнётся
-                                    перерыв.
+                                    Услуга завершена
                                 </p>
                             )}
                         </article>
