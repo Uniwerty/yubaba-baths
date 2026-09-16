@@ -1,6 +1,5 @@
 import {Catalog, Composition, Order, Template} from "./types";
 import {Field, money} from "./ui";
-import {Plus, Trash2} from "lucide-react";
 
 export function compositionOf(t: Template | Order): Composition {
     return {
@@ -212,7 +211,7 @@ export function CompositionEditor({
                     </Field>
                     <button
                         type="button"
-                        className="icon-button danger"
+                        className="text-button danger"
                         aria-label="Удалить ингредиент"
                         onClick={() =>
                             set(
@@ -221,7 +220,7 @@ export function CompositionEditor({
                             )
                         }
                     >
-                        <Trash2 size={18}/>
+                        Удалить
                     </button>
                 </div>
             ))}
@@ -241,7 +240,7 @@ export function CompositionEditor({
                     ])
                 }
             >
-                <Plus size={16}/> Добавить ингредиент
+                 Добавить ингредиент
             </button>
             <Field label="Пошаговый рецепт воды">
         <textarea

@@ -1,5 +1,4 @@
 import {useState} from "react";
-import {Download, Lock, Plus, Unlock} from "lucide-react";
 import {api, download, useData} from "./api";
 import {Account, Catalog, Role, Supply} from "./types";
 import {date, Empty, Field, Loading, Modal, money, Notice, roles} from "./ui";
@@ -25,10 +24,9 @@ export function Accounts({
             <div className="section-heading">
                 <div>
                     <h2>Сотрудники и доступ</h2>
-                    <p>Пять ролей, у каждого — своё рабочее место</p>
                 </div>
                 <button onClick={() => setOpen(true)}>
-                    <Plus size={18}/> Добавить сотрудника
+                     Добавить сотрудника
                 </button>
             </div>
             <div className="panel">
@@ -76,7 +74,7 @@ export function Accounts({
                                                 )
                                             }
                                         >
-                                            {a.blocked ? <Unlock size={16}/> : <Lock size={16}/>}{" "}
+
                                             {a.blocked ? "Разблокировать" : "Заблокировать"}
                                         </button>
                                     </td>
@@ -185,10 +183,9 @@ export function Inventory({
             <div className="section-heading">
                 <div>
                     <h2>Склад и ресурсы</h2>
-                    <p>Остатки ингредиентов, поставки и комнаты</p>
                 </div>
                 <button onClick={() => setMode("ingredient")}>
-                    <Plus size={18}/> Новый ингредиент
+                     Новый ингредиент
                 </button>
             </div>
             <div className="panel">
@@ -244,7 +241,6 @@ export function Inventory({
             <div className="section-heading subheading">
                 <div>
                     <h2>Заявки поставщику</h2>
-                    <p>Формируются автоматически при достижении нижнего порога</p>
                 </div>
             </div>
             <Notice error={error}/>
@@ -277,7 +273,7 @@ export function Inventory({
                                     )
                                 }
                             >
-                                <Download size={16}/> Скачать
+                                 Скачать
                             </button>
                             {s.status === "OPEN" && (
                                 <button
@@ -289,7 +285,7 @@ export function Inventory({
                                                 s.quantity +
                                                 " " +
                                                 s.unit +
-                                                " — " +
+                                                " – " +
                                                 s.ingredientName +
                                                 "?",
                                             )
@@ -310,10 +306,9 @@ export function Inventory({
             <div className="section-heading subheading">
                 <div>
                     <h2>Комнаты</h2>
-                    <p>Типы купален и вместимость</p>
                 </div>
                 <button className="secondary" onClick={() => setMode("room")}>
-                    <Plus size={16}/> Добавить комнату
+                     Добавить комнату
                 </button>
             </div>
             <div className="panel">

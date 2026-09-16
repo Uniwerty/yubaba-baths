@@ -111,7 +111,7 @@ class WorkflowIntegrationTest {
         o = step("chihiro", o, "start");
         o = step("chihiro", o, "complete");
         assertEquals("AWAITING_PAYMENT", o.path("status").asText());
-        assertEquals(400, call("lin", "POST", "/api/orders/" + o.get("id") + "/pay", Map.of("version", o.get("version").asLong())).getResponse().getStatus());
+        assertEquals(409, call("lin", "POST", "/api/orders/" + o.get("id") + "/pay", Map.of("version", o.get("version").asLong())).getResponse().getStatus());
         o = ok("lin", "POST", "/api/orders/" + o.get("id") + "/pay", Map.of("version", o.get("version").asLong(), "method", "CARD"));
         assertEquals("CLOSED", o.path("status").asText());
         assertEquals(1, jdbc.queryForObject("select count(*) from payments", Integer.class));

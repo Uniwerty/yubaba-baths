@@ -1,5 +1,4 @@
 import {useEffect, useRef, useState} from "react";
-import {Bell, Check, Clock, Flame, Play} from "lucide-react";
 import {api, useData} from "./api";
 import {Catalog, Order} from "./types";
 import {Perform, Recipe} from "./Orders";
@@ -39,10 +38,9 @@ export function Boiler({perform, busy}: { perform: Perform; busy: boolean }) {
             <div className="section-heading">
                 <div>
                     <h2>Очередь котельной</h2>
-                    <p>Сначала высокий приоритет, затем время поступления</p>
                 </div>
                 <label className="sound">
-                    <Bell size={18}/>
+
                     <select
                         aria-label="Оповещения котельной"
                         value={mode}
@@ -108,7 +106,7 @@ export function Boiler({perform, busy}: { perform: Perform; busy: boolean }) {
                                     )
                                 }
                             >
-                                <Flame size={22}/> Вода готова
+                                 Вода готова
                             </button>
                         </article>
                     ))}
@@ -140,10 +138,9 @@ export function Schedule({
             <div className="section-heading">
                 <div>
                     <h2>Моя смена</h2>
-                    <p>Назначенные купания и время для отдыха · московское время</p>
                 </div>
                 <span className="pill">
-          <Clock size={16}/>
+
                     {active.length} активных заказов
         </span>
             </div>
@@ -159,7 +156,7 @@ export function Schedule({
             ) : !active.length ? (
                 <div className="panel">
                     <Empty>
-                        Сейчас нет назначенных заказов. Можно отдохнуть — список обновляется
+                        Сейчас нет назначенных заказов. Можно отдохнуть – список обновляется
                         автоматически.
                     </Empty>
                 </div>
@@ -208,7 +205,7 @@ export function Schedule({
                                         )
                                     }
                                 >
-                                    <Play/>
+
                                     {o.waterReadyAt ? "Начать услугу" : "Ожидаем готовность воды"}
                                 </button>
                             )}
@@ -226,7 +223,7 @@ export function Schedule({
                                         )
                                     }
                                 >
-                                    <Check/> Завершить услугу
+                                     Завершить услугу
                                 </button>
                             )}
                             {o.status === "AWAITING_PAYMENT" && (
@@ -247,7 +244,7 @@ export function Schedule({
               <span>
                 № {o.id} · {o.serviceName}
                   <small>
-                  {date(o.serviceStartedAt)} — {date(o.completedAt)}
+                  {date(o.serviceStartedAt)} – {date(o.completedAt)}
                 </small>
               </span>
                             <Badge status={o.status}/>

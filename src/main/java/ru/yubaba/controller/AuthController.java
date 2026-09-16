@@ -1,6 +1,5 @@
 package ru.yubaba.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,6 +9,7 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.web.bind.annotation.*;
+import ru.yubaba.controller.dto.Login;
 import ru.yubaba.data.repository.AccountRepository;
 import ru.yubaba.service.BusinessException;
 
@@ -31,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Object login(@Valid @RequestBody Requests.Login input) {
+    public Object login(@RequestBody Login input) {
         var a = accounts.findByLogin(input.login())
                 .orElseThrow(() -> new BusinessException(HttpStatus.UNAUTHORIZED, "Неверный логин или пароль."));
         if (a.blocked || !passwords.matches(input.password(), a.password)) {

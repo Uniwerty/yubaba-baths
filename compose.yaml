@@ -30,7 +30,9 @@ services:
     networks:
       - yubaba-network
     environment:
-      DB_PASSWORD: yubaba-local
+      DB_URL: jdbc:postgresql://db:5432/yubaba
+      DB_USER: yubaba
+      DB_PASSWORD: ${DB_PASSWORD:-yubaba-local}
       JWT_SECRET: ${JWT_SECRET:-local-demo-only-secret-change-before-deployment-123456}
       BOOTSTRAP_PASSWORD: ${BOOTSTRAP_PASSWORD:-Yubaba-demo-2026}
       DEMO_DATA: ${DEMO_DATA:-true}
@@ -45,7 +47,7 @@ services:
     environment:
       LIQUIBASE_COMMAND_URL: jdbc:postgresql://db:5432/yubaba
       LIQUIBASE_COMMAND_USERNAME: yubaba
-      LIQUIBASE_COMMAND_PASSWORD: yubaba-local
+      LIQUIBASE_COMMAND_PASSWORD: ${DB_PASSWORD:-yubaba-local}
     networks:
       - yubaba-network
     volumes:

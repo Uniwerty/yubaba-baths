@@ -1,5 +1,4 @@
 import {useState} from "react";
-import {Pencil, Plus, Search} from "lucide-react";
 import {api, useData} from "./api";
 import {Catalog, Client, Composition, Template} from "./types";
 import {Empty, Field, Loading, Modal, money, Notice} from "./ui";
@@ -32,16 +31,15 @@ export function Clients({
             <div className="section-heading">
                 <div>
                     <h2>Гости купален</h2>
-                    <p>Поиск, регистрация и редактирование гостей</p>
                 </div>
                 <button onClick={() => open(null)}>
-                    <Plus size={18}/> Новый гость
+                     Новый гость
                 </button>
             </div>
             <div className="panel">
                 <div className="toolbar">
                     <div className="search">
-                        <Search size={18}/>
+
                         <input
                             aria-label="Поиск гостей"
                             placeholder="Имя или контакт"
@@ -73,15 +71,15 @@ export function Clients({
                                         <strong>{c.name}</strong>
                                     </td>
                                     <td>{c.contact}</td>
-                                    <td>{c.notes || "—"}</td>
+                                    <td>{c.notes || "–"}</td>
                                     <td>
                                         <button
-                                            className="icon-button"
+                                            className="text-button"
                                             aria-label={"Редактировать " + c.name}
                                             onClick={() => open(c)}
                                         >
-                                            <Pencil size={18}/>
-                                        </button>
+                                            Изменить
+</button>
                                     </td>
                                 </tr>
                             ))}
@@ -163,10 +161,9 @@ export function Templates({
             <div className="section-heading">
                 <div>
                     <h2>Шаблоны услуг</h2>
-                    <p>Состав услуг, рецепты и стоимость</p>
                 </div>
                 <button onClick={() => open(null)}>
-                    <Plus size={18}/> Создать шаблон
+                     Создать шаблон
                 </button>
             </div>
             <div className="card-grid">
@@ -201,7 +198,7 @@ export function Templates({
                                 )}
                             </strong>
                             <button className="secondary" onClick={() => open(t)}>
-                                <Pencil size={16}/> Изменить
+                                 Изменить
                             </button>
                         </footer>
                     </article>

@@ -1,5 +1,4 @@
 import {useCallback, useEffect, useState} from "react";
-import {LogOut, Menu,} from "lucide-react";
 import {api, RefreshContext, setToken, useAction, useData} from "./api";
 import {Account, Catalog} from "./types";
 import {ErrorContext, Field, Loading, Notice, roles} from "./ui";
@@ -90,7 +89,6 @@ function Login({onLogin}: { onLogin: (a: Account) => void }) {
             <section className="login-form">
                 <h1>Купальни Юбабы</h1>
                 <h2>Добро пожаловать</h2>
-                <p>Вход в систему управления купальнями</p>
                 <form
                     onSubmit={async (e) => {
                         e.preventDefault();
@@ -182,11 +180,11 @@ function Workspace({user, logout}: { user: Account; logout: () => void }) {
                                     <small>{roles[user.role]}</small>
                                 </div>
                                 <button
-                                    className="icon-button"
+                                    className="text-button"
                                     aria-label="Выйти"
                                     onClick={logout}
                                 >
-                                    <LogOut size={18}/>
+                                    Выйти
                                 </button>
                             </div>
                         </div>
@@ -194,11 +192,11 @@ function Workspace({user, logout}: { user: Account; logout: () => void }) {
                     <div className="main">
                         <header className="topbar">
                             <button
-                                className="icon-button mobile-menu"
+                                className="text-button mobile-menu"
                                 aria-label="Меню"
                                 onClick={() => setMobile(!mobile)}
                             >
-                                <Menu/>
+                                Меню
                             </button>
                             <span>
                 Купальни Юбабы <span className="slash">/</span>{" "}
@@ -227,10 +225,7 @@ function Workspace({user, logout}: { user: Account; logout: () => void }) {
                                 busy={action.busy}
                             />
                         </main>
-                        <footer className="app-footer">
-                            Система управления купальнями{" "}
-                            <span>Время в системе — МСК</span>
-                        </footer>
+                        <footer className="app-footer"/>
                     </div>
                 </div>
             </ErrorContext.Provider>

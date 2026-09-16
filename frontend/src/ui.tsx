@@ -9,7 +9,6 @@ import {
     useId,
     useRef,
 } from "react";
-import {Inbox, LoaderCircle, X} from "lucide-react";
 import {Role, Status} from "./types";
 
 export const ErrorContext = createContext("");
@@ -47,7 +46,7 @@ export const date = (s: string | null) =>
             hour: "2-digit",
             minute: "2-digit",
         })
-        : "—";
+        : "–";
 export const today = () =>
     new Date().toLocaleDateString("sv-SE", {timeZone: "Europe/Moscow"});
 
@@ -58,7 +57,7 @@ export function Badge({status}: { status: Status }) {
 export function Empty({children}: { children: ReactNode }) {
     return (
         <div className="empty">
-            <Inbox size={32}/>
+
             <p>{children}</p>
         </div>
     );
@@ -67,7 +66,7 @@ export function Empty({children}: { children: ReactNode }) {
 export function Loading() {
     return (
         <div className="empty">
-            <LoaderCircle className="spin"/>
+
             Загружаем данные…
         </div>
     );
@@ -127,11 +126,11 @@ export function Modal({
                 <h2>{title}</h2>
                 <button
                     type="button"
-                    className="icon-button"
+                    className="text-button"
                     onClick={onClose}
                     aria-label="Закрыть"
                 >
-                    <X/>
+                    Закрыть
                 </button>
             </header>
             <Notice error={error}/>

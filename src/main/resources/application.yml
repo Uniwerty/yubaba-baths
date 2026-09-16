@@ -1,12 +1,12 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
   datasource:
-    url: jdbc:postgresql://db:5432/yubaba
-    username: yubaba
-    password: ${DB_PASSWORD}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/yubaba}
+    username: ${DB_USER:yubaba}
+    password: ${DB_PASSWORD:yubaba-local}
     hikari:
       maximum-pool-size: 12
       connection-timeout: 5000
@@ -23,6 +23,6 @@ spring:
     problemdetails:
       enabled: true
 app:
-  jwt-secret: ${JWT_SECRET}
-  bootstrap-password: ${BOOTSTRAP_PASSWORD}
+  jwt-secret: ${JWT_SECRET:local-demo-only-secret-change-before-deployment-123456}
+  bootstrap-password: ${BOOTSTRAP_PASSWORD:Yubaba-demo-2026}
   demo: ${DEMO_DATA:false}

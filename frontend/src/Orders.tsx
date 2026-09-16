@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import {ArrowRight, Check, Clock, Flame, Plus, Search, Users,} from "lucide-react";
 import {api, query, useData} from "./api";
 import {Catalog, Client, Composition, Order, Role, Status} from "./types";
 import {Badge, date, Empty, Field, Loading, methods, Modal, money, Notice, statuses,} from "./ui";
@@ -39,18 +38,17 @@ export function Orders({
             <div className="section-heading">
                 <div>
                     <h2>Заказы гостей</h2>
-                    <p>Создание заказов и управление обслуживанием</p>
                 </div>
                 {role === "ADMIN" && (
                     <button onClick={() => setForm(null)}>
-                        <Plus size={18}/> Новый заказ
+                         Новый заказ
                     </button>
                 )}
             </div>
             <div className="panel">
                 <div className="toolbar">
                     <div className="search">
-                        <Search size={18}/>
+
                         <input
                             aria-label="Поиск заказов"
                             placeholder="Номер, гость, контакт или услуга"
@@ -76,7 +74,7 @@ export function Orders({
                             </option>
                         ))}
                     </select>
-                    <span className="muted">{data?.total ?? "—"} заказов</span>
+                    <span className="muted">{data?.total ?? "–"} заказов</span>
                 </div>
                 <Notice error={error}/>
                 {loading ? (
@@ -118,11 +116,11 @@ export function Orders({
                                     <td className="amount">{money(o.total)}</td>
                                     <td>
                                         <button
-                                            className="icon-button"
+                                            className="text-button"
                                             aria-label={"Открыть заказ " + o.id}
                                             onClick={() => setSelected(o.id)}
                                         >
-                                            <ArrowRight size={20}/>
+                                            Открыть
                                         </button>
                                     </td>
                                 </tr>
@@ -326,7 +324,7 @@ function OrderForm({
                     </p>
                 )}
                 <div className="recipe-summary">
-                    <Flame size={22}/>
+
                     <div>
                         <strong>{c.name || "Индивидуальная услуга"}</strong>
                         <p>
@@ -336,7 +334,7 @@ function OrderForm({
                     </div>
                 </div>
                 <details open={!templateId}>
-                    <summary>Состав заказа и рецепт — изменить</summary>
+                    <summary>Состав заказа и рецепт – изменить</summary>
                     <CompositionEditor value={c} onChange={setC} cat={cat}/>
                 </details>
                 <Notice error={error}/>
@@ -373,15 +371,15 @@ export function Recipe({order: o}: { order: Order }) {
         <>
             <div className="mini-stats">
         <span>
-          <Clock size={16}/>
+
             {o.durationMinutes} мин
         </span>
                 <span>
-          <Users size={16}/>
+
                     {o.visitors} гостей
         </span>
                 <span>
-          <Flame size={16}/>
+
                     {o.temperature} °C
         </span>
             </div>
@@ -476,7 +474,7 @@ function OrderDetails({
                                             : ""
                                     }
                                 >
-                  <Check size={14}/>
+
                                     {statuses[s as Status]}
                 </span>
                             ),

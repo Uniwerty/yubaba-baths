@@ -3,7 +3,8 @@ CREATE TABLE allocation_lock
     id bigint PRIMARY KEY
 );
 
-INSERT INTO allocation_lock (id) VALUES (1);
+INSERT INTO allocation_lock (id)
+VALUES (1);
 
 CREATE TABLE accounts
 (
@@ -107,8 +108,7 @@ CREATE TABLE bath_orders
     cancellation_reason varchar(1000)
 );
 
-CREATE UNIQUE INDEX one_active_order_per_room ON bath_orders (room_id)
-    WHERE status IN ('IN_SERVICE','AWAITING_PAYMENT');
+CREATE UNIQUE INDEX one_active_order_per_room ON bath_orders (room_id) WHERE status IN ('IN_SERVICE','AWAITING_PAYMENT');
 
 CREATE INDEX orders_status_created ON bath_orders (status, created_at);
 
@@ -181,5 +181,4 @@ CREATE TABLE supply_requests
     received_at     timestamptz
 );
 
-CREATE UNIQUE INDEX one_open_supply_per_ingredient ON supply_requests (ingredient_id)
-    WHERE status='OPEN';
+CREATE UNIQUE INDEX one_open_supply_per_ingredient ON supply_requests (ingredient_id) WHERE status='OPEN';

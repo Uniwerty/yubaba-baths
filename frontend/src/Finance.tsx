@@ -1,5 +1,4 @@
 import {useState} from "react";
-import {ArrowUpRight, Bookmark, Download} from "lucide-react";
 import {api, query, useData} from "./api";
 import {Catalog, Dashboard, Filter, Report, SavedReport} from "./types";
 import {Badge, date, Empty, Field, Loading, methods, money, Notice, Stat, statuses, today,} from "./ui";
@@ -55,10 +54,9 @@ export function DashboardView() {
             <div className="section-heading">
                 <div>
                     <h2>Купальни сегодня</h2>
-                    <p>Заказы, выручка и занятость ресурсов</p>
                 </div>
                 <span className="live">
-          <i/> Обновление каждые 3 секунды
+          Обновление каждые 3 секунды
         </span>
             </div>
             <div className="period">
@@ -151,7 +149,7 @@ export function DashboardView() {
                                                         : "Готов к назначению"}
                                             </small>
                                         </div>
-                                        <i className={"dot " + (orders.length ? "amber" : "")}/>
+
                                     </div>
                                 ))}
                                 {!d.attendants.length && (
@@ -176,12 +174,12 @@ export function DashboardView() {
                                             </small>
                                         </div>
                                         <span>Приоритет {o.priority}</span>
-                                        <ArrowUpRight size={18}/>
+
                                     </div>
                                 ))
                             ) : (
                                 <Empty>
-                                    Очередь свободна — котельная готова к новым гостям.
+                                    Очередь свободна – котельная готова к новым гостям.
                                 </Empty>
                             )}
                         </section>
@@ -259,14 +257,13 @@ export function Finance({
             <div className="section-heading">
                 <div>
                     <h2>Финансовая отчётность</h2>
-                    <p>Заказы и связанные с ними платежи за выбранный период</p>
                 </div>
                 <button
                     className="secondary"
                     disabled={!r}
                     onClick={() => r && exportCsv(r)}
                 >
-                    <Download size={18}/> Скачать CSV
+                     Скачать CSV
                 </button>
             </div>
             <section className="panel filters">
@@ -404,7 +401,7 @@ export function Finance({
                                                                 <small>{date(p.paidAt)}</small>
                                                             </>
                                                         ) : (
-                                                            "—"
+                                                            "–"
                                                         )}
                                                     </td>
                                                 </tr>
@@ -442,7 +439,7 @@ export function Finance({
                                 />
                             </Field>
                             <button className="secondary" disabled={busy}>
-                                <Bookmark size={18}/> Сохранить шаблон
+                                 Сохранить шаблон
                             </button>
                         </form>
                     </>
