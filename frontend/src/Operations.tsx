@@ -156,8 +156,7 @@ export function Schedule({
             ) : !active.length ? (
                 <div className="panel">
                     <Empty>
-                        Сейчас нет назначенных заказов. Можно отдохнуть – список обновляется
-                        автоматически.
+                        Сейчас нет назначенных заказов
                     </Empty>
                 </div>
             ) : (

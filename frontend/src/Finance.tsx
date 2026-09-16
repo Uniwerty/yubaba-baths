@@ -55,9 +55,6 @@ export function DashboardView() {
                 <div>
                     <h2>Купальни сегодня</h2>
                 </div>
-                <span className="live">
-          Обновление каждые 3 секунды
-        </span>
             </div>
             <div className="period">
                 <Period filter={f} set={set}/>
@@ -72,22 +69,18 @@ export function DashboardView() {
                             <Stat
                                 label="Выручка"
                                 value={money(d.revenue)}
-                                hint="По дате получения оплаты"
                             />
                             <Stat
                                 label="Заказы"
                                 value={d.orderCount}
-                                hint="Созданы за выбранный период"
                             />
                             <Stat
                                 label="Среднее обслуживание"
                                 value={d.averageMinutes.toFixed(1) + " мин"}
-                                hint="От начала до завершения услуги"
                             />
                             <Stat
                                 label="В очереди котельной"
                                 value={d.queue.length}
-                                hint="Текущее состояние"
                             />
                         </div>
                         {d.empty && (
@@ -160,7 +153,6 @@ export function DashboardView() {
                         <section className="panel">
                             <div className="panel-title">
                                 <h3>Котельная</h3>
-                                <span>Приоритет → время поступления</span>
                             </div>
                             {d.queue.length ? (
                                 d.queue.map((o) => (

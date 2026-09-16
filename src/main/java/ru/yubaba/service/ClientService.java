@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yubaba.controller.dto.ClientInput;
 import ru.yubaba.data.entity.Client;
-import ru.yubaba.data.repository.AllocationLockRepository;
 import ru.yubaba.data.repository.ClientRepository;
 
 import java.util.Comparator;
@@ -17,14 +16,11 @@ import static ru.yubaba.service.ServiceChecks.*;
 @Transactional(readOnly = true)
 public class ClientService {
     private final ClientRepository clientRepository;
-    private final AllocationLockRepository allocationLockRepository;
 
     public ClientService(
-            ClientRepository clientRepository,
-            AllocationLockRepository allocationLockRepository
+            ClientRepository clientRepository
     ) {
         this.clientRepository = clientRepository;
-        this.allocationLockRepository = allocationLockRepository;
     }
 
     public List<Client> getClients(String query) {
@@ -37,7 +33,6 @@ public class ClientService {
 
     @Transactional
     public Client saveClient(Long id, ClientInput input) {
-        allocationLockRepository.acquire();
         Client client = id == null ? new Client() : clientRepository.findById(id).orElseThrow(ServiceChecks::createNotFoundException);
         if (id != null) {
             compareVersion(client.version, input.version());

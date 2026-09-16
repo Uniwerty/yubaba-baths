@@ -9,7 +9,6 @@ import ru.yubaba.controller.dto.TemplateInput;
 import ru.yubaba.data.entity.RecipeLine;
 import ru.yubaba.data.entity.Room;
 import ru.yubaba.data.entity.ServiceTemplate;
-import ru.yubaba.data.repository.AllocationLockRepository;
 import ru.yubaba.data.repository.IngredientRepository;
 import ru.yubaba.data.repository.RoomRepository;
 import ru.yubaba.data.repository.ServiceTemplateRepository;
@@ -27,18 +26,15 @@ public class CatalogService {
     private final RoomRepository roomRepository;
     private final IngredientRepository ingredientRepository;
     private final ServiceTemplateRepository serviceTemplateRepository;
-    private final AllocationLockRepository allocationLockRepository;
 
     public CatalogService(
             RoomRepository roomRepository,
             IngredientRepository ingredientRepository,
-            ServiceTemplateRepository serviceTemplateRepository,
-            AllocationLockRepository allocationLockRepository
+            ServiceTemplateRepository serviceTemplateRepository
     ) {
         this.roomRepository = roomRepository;
         this.ingredientRepository = ingredientRepository;
         this.serviceTemplateRepository = serviceTemplateRepository;
-        this.allocationLockRepository = allocationLockRepository;
     }
 
     public CatalogResponse getCatalog() {
@@ -74,7 +70,6 @@ public class CatalogService {
 
     @Transactional
     public ServiceTemplate saveTemplate(Long id, TemplateInput input) {
-        allocationLockRepository.acquire();
         var template = id == null ? new ServiceTemplate() : serviceTemplateRepository.findById(id).orElseThrow(ServiceChecks::createNotFoundException);
         if (id != null) {
             compareVersion(template.version, input.version());
@@ -99,7 +94,6 @@ public class CatalogService {
 
     @Transactional
     public Room saveRoom(RoomInput input) {
-        allocationLockRepository.acquire();
         var room = new Room();
         room.name = input.name();
         room.bathType = input.bathType();

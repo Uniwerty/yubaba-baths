@@ -19,7 +19,6 @@ import ru.yubaba.data.entity.Payment;
 import ru.yubaba.data.enums.OrderStatus;
 import ru.yubaba.data.enums.Role;
 import ru.yubaba.data.repository.AccountRepository;
-import ru.yubaba.data.repository.AllocationLockRepository;
 import ru.yubaba.data.repository.AuditEventRepository;
 import ru.yubaba.data.repository.BathOrderRepository;
 import ru.yubaba.data.repository.ClientRepository;
@@ -50,7 +49,6 @@ public class OrderService {
     private final BathOrderRepository bathOrderRepository;
     private final PaymentRepository paymentRepository;
     private final AuditEventRepository auditEventRepository;
-    private final AllocationLockRepository allocationLockRepository;
     private final CurrentAccountService currentAccountService;
     private final CatalogService catalogService;
     private final ResourceAvailabilityService resourceAvailabilityService;
@@ -64,7 +62,6 @@ public class OrderService {
             BathOrderRepository bathOrderRepository,
             PaymentRepository paymentRepository,
             AuditEventRepository auditEventRepository,
-            AllocationLockRepository allocationLockRepository,
             CurrentAccountService currentAccountService,
             CatalogService catalogService,
             ResourceAvailabilityService resourceAvailabilityService,
@@ -77,7 +74,6 @@ public class OrderService {
         this.bathOrderRepository = bathOrderRepository;
         this.paymentRepository = paymentRepository;
         this.auditEventRepository = auditEventRepository;
-        this.allocationLockRepository = allocationLockRepository;
         this.currentAccountService = currentAccountService;
         this.catalogService = catalogService;
         this.resourceAvailabilityService = resourceAvailabilityService;
@@ -125,7 +121,6 @@ public class OrderService {
 
     @Transactional
     public BathOrder saveOrder(Long id, OrderInput input) {
-        allocationLockRepository.acquire();
         var order = id == null ? new BathOrder() : bathOrderRepository.findById(id).orElseThrow(ServiceChecks::createNotFoundException);
         if (id != null) {
             compareVersion(order.version, input.version());
@@ -199,14 +194,18 @@ public class OrderService {
 
     @Transactional
     public BathOrder launchOrder(Long id, Long expected) {
-        allocationLockRepository.acquire();
         var order = getOrder(id);
         compareVersion(order.version, expected);
         check(order.status == OrderStatus.CREATED, "Заказ уже запущен или завершён.");
         var issues = resourceAvailabilityService.getAvailabilityIssues(order);
         check(issues.isEmpty(), String.join(" ", issues));
         order.roomId = resourceAvailabilityService.getFreeRooms(order).get(0).id;
-        order.attendantIds.addAll(resourceAvailabilityService.getFreeAttendants().stream().limit(order.attendants).map(a -> a.id).toList());
+        var attendants = resourceAvailabilityService.getFreeAttendants().stream().limit(order.attendants).toList();
+        check(attendants.size() == order.attendants, "Недостаточно свободных банщиков. Обновите страницу.");
+        for (var attendant : attendants) {
+            attendant.activeOrderId = order.id;
+            order.attendantIds.add(attendant.id);
+        }
         for (var line : order.lines) {
             var ingredient = ingredientRepository.findById(line.ingredientId).orElseThrow();
             ingredient.reserved = ingredient.reserved.add(line.quantity);
@@ -220,7 +219,6 @@ public class OrderService {
 
     @Transactional
     public BathOrder setWaterReady(Long id, Long expected) {
-        allocationLockRepository.acquire();
         var order = getOrder(id);
         compareVersion(order.version, expected);
         check(order.status == OrderStatus.IN_SERVICE && order.waterReadyAt == null, "Задание уже выполнено или отменено.");
@@ -237,7 +235,6 @@ public class OrderService {
 
     @Transactional
     public BathOrder startService(Long id, Long expected) {
-        allocationLockRepository.acquire();
         var order = getOrder(id);
         compareVersion(order.version, expected);
         check(order.status == OrderStatus.IN_SERVICE && order.waterReadyAt != null, "Вода ещё не готова. Дождитесь котельной.");
@@ -249,7 +246,6 @@ public class OrderService {
 
     @Transactional
     public BathOrder completeService(Long id, Long expected) {
-        allocationLockRepository.acquire();
         var order = getOrder(id);
         compareVersion(order.version, expected);
         check(order.status == OrderStatus.IN_SERVICE && order.serviceStartedAt != null, "Сначала начните услугу после готовности воды.");
@@ -266,9 +262,10 @@ public class OrderService {
                 ingredient.reserved = ingredient.reserved.subtract(line.quantity);
             }
         }
-        if (order.serviceStartedAt != null) {
-            for (Long id : order.attendantIds) {
-                var account = accountRepository.findById(id).orElseThrow();
+        for (Long id : order.attendantIds) {
+            var account = accountRepository.findById(id).orElseThrow();
+            account.activeOrderId = null;
+            if (order.serviceStartedAt != null) {
                 account.restUntil = Instant.now().plusSeconds(order.breakMinutes * 60L);
             }
         }
@@ -276,7 +273,6 @@ public class OrderService {
 
     @Transactional
     public BathOrder cancelOrder(Long id, CancelInput input) {
-        allocationLockRepository.acquire();
         var order = getOrder(id);
         compareVersion(order.version, input.version());
         check(order.status == OrderStatus.CREATED || order.status == OrderStatus.IN_SERVICE, "Отмена возможна только до завершения услуги.");
@@ -291,7 +287,6 @@ public class OrderService {
 
     @Transactional
     public BathOrder payOrder(Long id, PayInput input) {
-        allocationLockRepository.acquire();
         var order = getOrder(id);
         compareVersion(order.version, input.version());
         check(order.status == OrderStatus.AWAITING_PAYMENT, "Оплата доступна после завершения услуги.");

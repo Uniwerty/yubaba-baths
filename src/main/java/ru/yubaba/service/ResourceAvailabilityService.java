@@ -53,11 +53,8 @@ public class ResourceAvailabilityService {
     }
 
     public List<Account> getFreeAttendants() {
-        Set<Long> busy = getActiveOrders().stream()
-                .flatMap(a -> a.attendantIds.stream())
-                .collect(Collectors.toSet());
         return accountRepository.findAll().stream()
-                .filter(a -> a.role == Role.ATTENDANT && !a.blocked && !busy.contains(a.id))
+                .filter(a -> a.role == Role.ATTENDANT && !a.blocked && a.activeOrderId == null)
                 .filter(a -> a.restUntil == null || !a.restUntil.isAfter(Instant.now()))
                 .sorted(Comparator.comparing(a -> a.id))
                 .toList();

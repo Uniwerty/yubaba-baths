@@ -68,13 +68,17 @@ class LiquibaseMigrationTest {
         inSchema((connection, schema) -> {
             var migration = liquibase(connection, schema, MASTER);
             migration.update(new Contexts(), new LabelExpression());
-            assertEquals(1, count(connection, "databasechangelog"));
-            assertEquals(1, count(connection, "allocation_lock"));
+            assertEquals(2, count(connection, "databasechangelog"));
+            try (var statement = connection.createStatement(); var result = statement.executeQuery(
+                    "SELECT count(*) FROM information_schema.tables WHERE table_schema=current_schema() AND table_name='allocation_lock'")) {
+                result.next();
+                assertEquals(0, result.getInt(1));
+            }
             try (var statement = connection.createStatement()) {
                 statement.execute("INSERT INTO clients(name,contact,notes) VALUES ('Сохранённый гость','fresh-test','')");
             }
             migration.update(new Contexts(), new LabelExpression());
-            assertEquals(1, count(connection, "databasechangelog"));
+            assertEquals(2, count(connection, "databasechangelog"));
             assertEquals(1, count(connection, "clients"));
             try (var statement = connection.createStatement(); var result = statement.executeQuery(
                     "SELECT count(*) FROM pg_indexes WHERE schemaname=current_schema() AND indexname='one_active_order_per_room'")) {
@@ -93,13 +97,46 @@ class LiquibaseMigrationTest {
             }
             liquibase(connection, schema, INITIAL).changeLogSync(new Contexts(), new LabelExpression());
             liquibase(connection, schema, MASTER).update(new Contexts(), new LabelExpression());
-            assertEquals(1, count(connection, "databasechangelog"));
-            assertEquals(1, count(connection, "allocation_lock"));
+            assertEquals(2, count(connection, "databasechangelog"));
+            try (var statement = connection.createStatement(); var result = statement.executeQuery(
+                    "SELECT count(*) FROM information_schema.tables WHERE table_schema=current_schema() AND table_name='allocation_lock'")) {
+                result.next();
+                assertEquals(0, result.getInt(1));
+            }
             assertEquals(1, count(connection, "clients"));
             try (var statement = connection.createStatement(); var result = statement.executeQuery("SELECT notes FROM clients")) {
                 result.next();
                 assertEquals("Не изменять", result.getString(1));
             }
+        });
+    }
+
+    @Test
+    void transfersActiveAssignmentsWhenRemovingGlobalLock() throws Exception {
+        inSchema((connection, schema) -> {
+            liquibase(connection, schema, INITIAL).update(new Contexts(), new LabelExpression());
+            try (var statement = connection.createStatement()) {
+                statement.execute("INSERT INTO accounts(id,login,password,name,role) VALUES (1,'worker','hash','Worker','ATTENDANT'),(2,'free','hash','Free','ATTENDANT')");
+                statement.execute("INSERT INTO clients(id,name,contact,notes) VALUES (1,'Guest','contact','')");
+                statement.execute("""
+                        INSERT INTO bath_orders(id,client_id,service_name,bath_type,attendants,visitors,
+                          duration_minutes,preparation_minutes,break_minutes,temperature,priority,
+                          steps,extra_services,base_price,total,status,created_at)
+                        VALUES (1,1,'Bath','Herbal',1,1,30,10,0,40,0,'Steps','',100,100,'IN_SERVICE',now()),
+                               (2,1,'Bath','Herbal',1,1,30,10,0,40,0,'Steps','',100,100,'CLOSED',now())
+                        """);
+                statement.execute("INSERT INTO order_attendants(order_id,account_id) VALUES (1,1),(2,2)");
+            }
+            liquibase(connection, schema, MASTER).update(new Contexts(), new LabelExpression());
+            try (var statement = connection.createStatement(); var result = statement.executeQuery(
+                    "SELECT active_order_id FROM accounts ORDER BY id")) {
+                assertTrue(result.next());
+                assertEquals(1L, result.getLong(1));
+                assertTrue(result.next());
+                assertNull(result.getObject(1));
+            }
+            assertEquals(2, count(connection, "bath_orders"));
+            assertEquals(2, count(connection, "order_attendants"));
         });
     }
 

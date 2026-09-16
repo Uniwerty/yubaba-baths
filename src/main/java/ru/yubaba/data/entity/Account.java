@@ -34,4 +34,7 @@ public class Account {
     public boolean blocked;
 
     public Instant restUntil;
+
+    @JsonIgnore
+    public Long activeOrderId;
 }

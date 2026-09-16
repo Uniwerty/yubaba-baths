@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Propagation;
 import ru.yubaba.controller.dto.IngredientInput;
 import ru.yubaba.data.entity.Ingredient;
 import ru.yubaba.data.entity.SupplyRequest;
-import ru.yubaba.data.repository.AllocationLockRepository;
 import ru.yubaba.data.repository.IngredientRepository;
 import ru.yubaba.data.repository.SupplyRequestRepository;
 
@@ -23,21 +22,17 @@ import static ru.yubaba.service.ServiceChecks.*;
 public class InventoryService {
     private final IngredientRepository ingredientRepository;
     private final SupplyRequestRepository supplyRequestRepository;
-    private final AllocationLockRepository allocationLockRepository;
 
     public InventoryService(
             IngredientRepository ingredientRepository,
-            SupplyRequestRepository supplyRequestRepository,
-            AllocationLockRepository allocationLockRepository
+            SupplyRequestRepository supplyRequestRepository
     ) {
         this.ingredientRepository = ingredientRepository;
         this.supplyRequestRepository = supplyRequestRepository;
-        this.allocationLockRepository = allocationLockRepository;
     }
 
     @Transactional
     public Ingredient saveIngredient(IngredientInput input) {
-        allocationLockRepository.acquire();
         var ingredient = new Ingredient();
         ingredient.name = input.name();
         ingredient.unit = input.unit();
@@ -79,14 +74,12 @@ public class InventoryService {
 
     @Transactional
     public List<SupplyRequest> getSupplyRequests() {
-        allocationLockRepository.acquire();
         generateSupplies();
         return supplyRequestRepository.findAll();
     }
 
     @Transactional
     public SupplyRequest receiveSupply(Long id) {
-        allocationLockRepository.acquire();
         var supplyRequest = supplyRequestRepository.findById(id).orElseThrow(ServiceChecks::createNotFoundException);
         check(supplyRequest.status.equals("OPEN"), "Поставка уже принята.");
         var ingredient = ingredientRepository.findById(supplyRequest.ingredientId).orElseThrow();

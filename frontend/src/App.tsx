@@ -134,7 +134,6 @@ function Login({onLogin}: { onLogin: (a: Account) => void }) {
                         {busy ? "Входим…" : "Войти в систему"}
                     </button>
                 </form>
-                <small>Нет доступа? Обратитесь к управляющему.</small>
             </section>
         </main>
     );

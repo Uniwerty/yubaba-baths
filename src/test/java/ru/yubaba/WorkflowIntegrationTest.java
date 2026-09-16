@@ -42,7 +42,7 @@ class WorkflowIntegrationTest {
         String db = jdbc.queryForObject("select current_database()", String.class);
         assertTrue(db.endsWith("_test"), "Use a dedicated _test database");
         jdbc.execute("TRUNCATE order_attendants,order_lines,audit_events,payments,bath_orders,report_templates,supply_requests RESTART IDENTITY CASCADE");
-        jdbc.update("UPDATE accounts SET blocked=false,rest_until=null");
+        jdbc.update("UPDATE accounts SET blocked=false,rest_until=null,active_order_id=null");
         jdbc.update("UPDATE ingredients SET stock=10000,reserved=0,threshold=100");
     }
 
@@ -178,6 +178,43 @@ class WorkflowIntegrationTest {
             var edited = ok("lin", "PUT", "/api/orders/" + waiting, replacement);
             step("lin", edited, "launch");
             assertEquals(2, jdbc.queryForObject("select count(distinct room_id) from bath_orders where status='IN_SERVICE'", Integer.class));
+        } finally {
+            pool.shutdownNow();
+        }
+    }
+
+    @Test
+    void concurrentOrdersInDifferentRoomsCannotShareAttendant() throws Exception {
+        jdbc.update("UPDATE accounts SET blocked=true WHERE login='rin'");
+        var firstInput = input();
+        ((ObjectNode) firstInput.get("composition")).putArray("lines");
+        var secondInput = firstInput.deepCopy();
+        long firstRoom = firstInput.path("composition").path("preferredRoomId").asLong();
+        String bathType = firstInput.path("composition").path("bathType").asText();
+        long secondRoom = jdbc.queryForObject(
+                "select id from rooms where id<>? and bath_type=? order by id limit 1", Long.class, firstRoom, bathType);
+        ((ObjectNode) secondInput.get("composition")).put("preferredRoomId", secondRoom);
+        var first = ok("lin", "POST", "/api/orders", firstInput);
+        var second = ok("lin", "POST", "/api/orders", secondInput);
+        var gate = new CountDownLatch(1);
+        var pool = Executors.newFixedThreadPool(2);
+        try {
+            List<Future<Integer>> results = new ArrayList<>();
+            for (var order : List.of(first, second)) {
+                results.add(pool.submit(() -> {
+                    gate.await();
+                    return call("lin", "POST", "/api/orders/" + order.path("id").asLong() + "/launch",
+                            Map.of("version", order.path("version").asLong())).getResponse().getStatus();
+                }));
+            }
+            gate.countDown();
+            var codes = new ArrayList<Integer>();
+            for (var result : results) codes.add(result.get(10, TimeUnit.SECONDS));
+            Collections.sort(codes);
+            assertEquals(List.of(200, 409), codes);
+            assertEquals(1, jdbc.queryForObject("select count(*) from bath_orders where status='IN_SERVICE'", Integer.class));
+            assertEquals(1, jdbc.queryForObject("select count(*) from accounts where active_order_id is not null", Integer.class));
+            assertEquals(1, jdbc.queryForObject("select count(*) from audit_events where action='LAUNCHED'", Integer.class));
         } finally {
             pool.shutdownNow();
         }
