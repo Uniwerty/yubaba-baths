@@ -202,14 +202,6 @@ function Workspace({user, logout}: { user: Account; logout: () => void }) {
                 Купальни Юбабы <span className="slash">/</span>{" "}
                                 <strong>{items.find((i) => i.id === page)?.label}</strong>
               </span>
-                            <span className="top-date">
-                {new Date().toLocaleDateString("ru-RU", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                    timeZone: "Europe/Moscow",
-                })}
-              </span>
                         </header>
                         <main className="content">
                             <Notice error={action.error}/>

@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.web.bind.annotation.*;
 import ru.yubaba.controller.dto.Login;
 import ru.yubaba.data.repository.AccountRepository;
-import ru.yubaba.service.BusinessException;
+import ru.yubaba.service.exception.BusinessException;
 
 import java.time.Duration;
 import java.time.Instant;

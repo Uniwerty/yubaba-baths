@@ -186,10 +186,6 @@ export function Schedule({
                                             ).toISOString(),
                                         )}
                                 </strong>
-                                <p>
-                                    Парение {o.durationMinutes} мин · перерыв после освобождения{" "}
-                                    {o.breakMinutes} мин
-                                </p>
                             </div>
                             {o.status === "IN_SERVICE" && !o.serviceStartedAt && (
                                 <button

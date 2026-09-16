@@ -1,4 +1,4 @@
-package ru.yubaba.service;
+package ru.yubaba.service.exception;
 
 import org.springframework.http.HttpStatus;
 

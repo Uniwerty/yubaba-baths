@@ -267,7 +267,7 @@ export function Finance({
                 </button>
             </div>
             <section className="panel filters">
-                <Field label="Сохранённый шаблон · запуск одним выбором">
+                <Field label="">
                     <select
                         value={saved}
                         onChange={(e) => {
@@ -340,10 +340,6 @@ export function Finance({
                     </div>
                     <button>Сформировать отчёт</button>
                 </form>
-                <p className="muted small">
-                    Период относится к дате создания заказа (МСК). Платежи включаются
-                    вместе с заказом, в том числе полученные позже.
-                </p>
             </section>
             <Notice error={error}/>
             {loading ? (
@@ -357,7 +353,6 @@ export function Finance({
                             <Stat
                                 label="Гостей"
                                 value={r.visitors}
-                                hint="Без отменённых заказов"
                             />
                         </div>
                         <div className="panel">
